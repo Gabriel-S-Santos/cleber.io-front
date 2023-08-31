@@ -11,7 +11,7 @@ const MainScreen = () => {
       const response = await fetch(".../api/Thrashs");
       if (response.ok) {
         const data = await response.json();
-        // Do something with the fetched data (update state, etc.)
+        setCards(data);
       } else {
         console.error("Failed to fetch cards");
       }
@@ -53,7 +53,7 @@ const MainScreen = () => {
           <Text style={[styles.btntext, styles.text]}>Adm</Text>
         </Pressable>
       </View>
-      
+
       <View style={[styles.searchbar, styles.inputLayout]}>
         <View style={[styles.input, styles.inputShadowBox]} />
         <Text style={styles.placeholder}>Pesquisar...</Text>

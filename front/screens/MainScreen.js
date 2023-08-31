@@ -46,16 +46,14 @@ const MainScreen = () => {
 
   return (
     <View style={styles.mainscreen}>
-      <View style={[styles.bg, styles.bgPosition]}>
-        <Text style={[styles.title, styles.titleClr]}>Cleber.io</Text>
-        {/*btn*/}
-        <Pressable
-          style={styles.buttonbg}
-          onPress={() => navigation.navigate("")}
-        >
-          <Text style={[styles.btntext, styles.titleClr]}>Adm</Text>
+
+      <View style={styles.bg}>
+        <Text style={[styles.title, styles.titleBg]}>Cleber.io</Text>
+        <Pressable style={styles.buttonbg} onPress={() => navigation.navigate("")}>
+          <Text style={[styles.btntext, styles.text]}>Adm</Text>
         </Pressable>
       </View>
+      
       <View style={[styles.searchbar, styles.inputLayout]}>
         <View style={[styles.input, styles.inputShadowBox]} />
         <Text style={styles.placeholder}>Pesquisar...</Text>
@@ -101,8 +99,9 @@ const MainScreen = () => {
 };
 
 const styles = StyleSheet.create({
-  bgPosition: {
-    height: "8%",
+  bg: {
+    backgroundColor: Color.darkslategray,
+    height: "8.5%",
     width: "100%",
     position: "relative",
     display: "flex",
@@ -110,10 +109,38 @@ const styles = StyleSheet.create({
     justifyContent: "space-between",
     alignItens: "center",
   },
-  titleClr: {
+  titleBg: {
     color: Color.white,
-    textAlign: "left",
     position: "relative",
+    margin: "5%",
+  },
+  title: {
+    fontWeight: "900",
+    fontFamily: FontFamily.poppinsBlack,
+    textAlign: "left",
+    fontSize: FontSize.size_xl,
+  },
+  buttonbg: {
+    borderRadius: 5,
+    backgroundColor: Color.lightgreen,
+    width: 75,
+    height: 25,
+    margin: "5%",
+    display: "flex",
+    justifyContent: "center",
+    alignContent: "center",
+  },
+  text: {
+    color: Color.white,
+  }, 
+  btntext: {
+    fontSize: 12,
+    fontWeight: "600",
+    fontFamily: FontFamily.poppinsSemiBold,
+    width: 32,
+    height: 19,
+    margin: "5%",
+    marginHorizontal:"30%",
   },
   idLayout: {
     height: 25,
@@ -147,41 +174,6 @@ const styles = StyleSheet.create({
     maxWidth: "100%",
     position: "absolute",
     overflow: "hidden",
-  },
-  bg: {
-    backgroundColor: Color.darkslategray,
-  },
-  title: {
-    top: 16,
-    fontWeight: "900",
-    fontFamily: FontFamily.poppinsBlack,
-    textAlign: "left",
-    fontSize: FontSize.size_xl,
-    left: 25,
-  },
-  buttonbg: {
-    borderRadius: 5,
-    backgroundColor: Color.lightgreen,
-    width: 75,
-    height: 25,
-    margin: "5%",
-    marginRight: "7%",
-  },
-  btntext: {
-    top: 3,
-    left: 22,
-    fontSize: 12,
-    fontWeight: "600",
-    fontFamily: FontFamily.poppinsSemiBold,
-    width: 32,
-    height: 19,
-    textAlign: "left",
-  },
-  logoutbtn: {
-    top: 19,
-    left: 260,
-    width: 75,
-    height: 25,
   },
   input: {
     borderRadius: Border.br_3xs,

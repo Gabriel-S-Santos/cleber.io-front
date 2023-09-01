@@ -1,10 +1,11 @@
 import React, { useEffect, useState } from "react";
-import { StyleSheet, View, Text, Pressable, TextInput } from "react-native";
-import { Image } from "expo-image";
+import { StyleSheet, View, Text, Pressable, TextInput, Image } from "react-native";
 import { Color, FontFamily, FontSize, Border } from "../GlobalStyles";
+import cardsData from "../cardsList.json";
 
 const MainScreen = () => {
-  const [cards, setCards] = useState([]);
+  const [cards, setCards] = useState(cardsData);
+  const [searchText, setSearchText] = useState("");
 
   const fetchCards = async () => {
     try {
@@ -40,228 +41,232 @@ const MainScreen = () => {
     }
   };
 
+  const filterCards = () => {
+    if (searchText === "") {
+      // Se o campo de pesquisa estiver vazio, exiba todos os cards
+      setCards(cardsData);
+    } else {
+      // Caso contrário, filtre os cards com base no texto de pesquisa
+      const filteredCards = cardsData.filter((card) =>
+        card.id.toString().includes(searchText)
+      );
+      setCards(filteredCards);
+    }
+  };
+
+  // Função para lidar com as alterações no campo de pesquisa
+  const handleSearchTextChange = (text) => {
+    setSearchText(text);
+  };
+
   useEffect(() => {
-    fetchCards();
-  }, []);
+    // fetchCards();
+    filterCards();
+  }, [searchText]);
 
   return (
-    <View style={styles.mainscreen}>
-
-      <View style={styles.bg}>
-        <Text style={[styles.title, styles.titleBg]}>Cleber.io</Text>
-        <Pressable style={styles.buttonbg} onPress={() => navigation.navigate("")}>
-          <Text style={[styles.btntext, styles.text]}>Adm</Text>
+    <View style={styles.container}>
+      <View style={styles.header}>
+        <Text style={styles.title}>Cleber.io</Text>
+        <Pressable style={styles.logoutButton} onPress={() => navigation.navigate("")}>
+          <Text style={styles.logoutButtonText}>Adm</Text>
         </Pressable>
       </View>
 
-      <View style={[styles.searchbar, styles.inputLayout]}>
-        <View style={[styles.input, styles.inputShadowBox]} />
-        <Text style={styles.placeholder}>Pesquisar...</Text>
+      <View style={styles.searchBar}>
+        <View style={styles.inputContainer}>
+        <TextInput
+            style={styles.input}
+            placeholder="Pesquisar..."
+            value={searchText}
+            onChangeText={handleSearchTextChange} // Lidar com alterações no campo de pesquisa
+          />
+        </View>
       </View>
 
       {/* List of Cards */}
       <View style={styles.cardList}>
         {cards.map((card) => (
-          <View key={card.id} style={styles.cardItem}>
+          <View
+            key={card.id}
+            style={[
+              styles.cardItem,
+              !card.openned && styles.cardClosed, // Aplicar o estilo condicional
+            ]}
+          >
             {/* Render card details */}
-            <Text>{card.title}</Text>
-            <Text>{card.description}</Text>
-            {/* Lock icon */}
-            <Pressable onPress={() => handleLockClick(card.id)}>
-              <Image
-                style={[styles.trshIcon, styles.iconLayout]}
-                contentFit="cover"
-                source={require("../assets/trsh@3x.png")}
-              />
-            </Pressable>
+            <View style={styles.cardRow}>
+              <View style={styles.cardLeft}>
+                
+                <Image
+                  style={[
+                    styles.trashIcon,
+                    !card.openned && styles.trashClosed, // Altera a cor do ícone do lixo
+                  ]}
+                  source={require("../assets/trsh@3x.png")}
+                />
+
+                <Text
+                  style={[
+                    styles.cardId,
+                    !card.openned && styles.cardIdClosed, // Altera a cor do texto do ID
+                  ]}
+                >
+                  #{card.id}
+                </Text>
+              </View>
+              <View style={styles.cardRight}>
+              <Pressable onPress={() => handleLockClick(card.id)}>
+                  {card.openned ? (
+                    <Image style={styles.padlockOpenedIcon} source={require("../assets/padlockopenned@3x.png")} />
+                  ) : (
+                    <Image style={styles.padlockClosedIcon} source={require("../assets/padlockclosed@3x.png")} />
+                  )}
+              </Pressable>
+              </View>
+            </View>
           </View>
         ))}
-      </View>
-
-      <View style={[styles.trashcard, styles.cardbgLayout]}>
-        <View style={[styles.cardbg, styles.cardbgLayout]} />
-        <View style={styles.trashid}>
-          <Image
-            style={[styles.trshIcon, styles.iconLayout]}
-            contentFit="cover"
-            source={require("../assets/trsh@3x.png")}
-          />
-          <Text style={[styles.id, styles.idLayout]}>#001</Text>
-        </View>
-        <Image
-          style={[styles.padlockopennedIcon, styles.iconLayout]}
-          contentFit="cover"
-          source={require("../assets/padlockopenned@3x.png")}
-        />
       </View>
     </View>
   );
 };
 
 const styles = StyleSheet.create({
-  bg: {
-    backgroundColor: Color.darkslategray,
-    height: "8.5%",
+  container: {
+    backgroundColor: Color.white,
+    height: "100%",
     width: "100%",
-    position: "relative",
-    display: "flex",
+  },
+  header: {
+    backgroundColor: Color.darkslategray,
+    height: 60,
     flexDirection: "row",
     justifyContent: "space-between",
-    alignItens: "center",
-  },
-  titleBg: {
-    color: Color.white,
-    position: "relative",
-    margin: "5%",
+    alignItems: "center",
+    paddingHorizontal: 16,
   },
   title: {
+    color: Color.white,
     fontWeight: "900",
     fontFamily: FontFamily.poppinsBlack,
-    textAlign: "left",
     fontSize: FontSize.size_xl,
   },
-  buttonbg: {
+  logoutButton: {
     borderRadius: 5,
     backgroundColor: Color.lightgreen,
     width: 75,
     height: 25,
-    margin: "5%",
-    display: "flex",
     justifyContent: "center",
-    alignContent: "center",
+    alignItems: "center",
   },
-  text: {
+  logoutButtonText: {
     color: Color.white,
-  }, 
-  btntext: {
     fontSize: 12,
     fontWeight: "600",
     fontFamily: FontFamily.poppinsSemiBold,
-    width: 32,
-    height: 19,
-    margin: "5%",
-    marginHorizontal:"30%",
   },
-  idLayout: {
-    height: 25,
-    position: "realtive",
+  searchBar: {
+    paddingHorizontal: 16,
+    paddingTop: 12,
+    marginVertical: 10,
   },
-  inputLayout: {
+  inputContainer: {
+    marginVertical: 8,
+    marginLeft: 8,
+    backgroundColor: Color.gray,
+    borderRadius: Border.br_3xs,
+    width: "95%",
     height: 45,
-    width: 310,
-    position: "absolute",
-  },
-  inputShadowBox: {
-    shadowOpacity: 1,
-    elevation: 13,
-    shadowRadius: 13,
+    shadowOpacity: 0.3,
+    elevation: 6,
+    shadowRadius: 6,
     shadowOffset: {
       width: 5,
-      height: 4,
+      height: 5,
     },
-    shadowColor: "rgba(0, 0, 0, 0.25)",
-    backgroundColor: Color.gray,
-    left: 0,
-    top: 0,
-  },
-  cardbgLayout: {
-    height: 145,
-    width: 310,
-    position: "absolute",
-  },
-  iconLayout: {
-    maxHeight: "100%",
-    maxWidth: "100%",
-    position: "absolute",
-    overflow: "hidden",
   },
   input: {
-    borderRadius: Border.br_3xs,
-    height: 45,
-    width: 310,
-    position: "absolute",
-  },
-  placeholder: {
-    top: 11,
-    left: 8,
+    flex: 1,
     fontSize: FontSize.size_mini,
     fontWeight: "300",
     fontFamily: FontFamily.poppinsLight,
     color: Color.darkslategray,
-    textAlign: "left",
-    position: "absolute",
+    paddingHorizontal: 8,
   },
-  searchbar: {
-    top: 87,
-    left: 25,
+  cardList: {
+    paddingHorizontal: 16,
   },
-  cardbg: {
-    borderRadius: 16,
-    shadowOpacity: 1,
-    elevation: 13,
-    shadowRadius: 13,
+  cardItem: {
+    marginVertical: 10,
+    marginLeft: 8,
+    height: 180,
+    width: "95%",
+    backgroundColor: Color.gray,
+    borderRadius: Border.br_3xs,
+    marginBottom: 16,
+    display: "flex",
+    flexDirection: "column",
+    justifyContent: "center",
+    alignItems: "center",
+    shadowOpacity: 0.3,
+    elevation: 6,
+    shadowRadius: 6,
     shadowOffset: {
       width: 5,
-      height: 4,
+      height: 5,
     },
-    shadowColor: "rgba(0, 0, 0, 0.25)",
-    backgroundColor: Color.gray,
-    left: 0,
-    top: 0,
   },
-  trshIcon: {
-    height: "100%",
-    width: "33.63%",
-    top: "0%",
-    right: "66.37%",
-    bottom: "0%",
-    left: "0%",
+  cardRow: {
+    flexDirection: "row",
+    justifyContent: "space-around",
+    alignItems: "center",
+    width: "100%",
   },
-  id: {
-    top: 9,
-    left: 29,
+  cardLeft: {
+    flexDirection: "row",
+    alignItems: "center",
+  },
+  trashIcon: {
+    width: 45,
+    height: 60,
+  },
+  cardId: {
+    fontSize: FontSize.size_xl,
     fontWeight: "800",
     fontFamily: FontFamily.poppinsExtraBold,
     color: "#565680",
-    width: 57,
-    textAlign: "left",
-    fontSize: FontSize.size_xl,
+    marginLeft: 8,
   },
-  trashid: {
-    height: "26.9%",
-    width: "27.9%",
-    top: "38.62%",
-    right: "57.1%",
-    left: "15%",
-    bottom: "34.48%",
-    position: "absolute",
+  cardRight: {
+    flexDirection: "row",
+    alignItems: "center",
   },
-  padlockopennedIcon: {
-    height: "31.03%",
-    width: "10.16%",
-    top: "34.48%",
-    right: "20.16%",
-    left: "69.68%",
-    bottom: "34.48%",
+  padlockOpenedIcon: {
+    width: 40,
+    height: 60,
   },
-  trashcard: {
-    top: 176,
-    left: 25,
+  padlockClosedIcon: {
+    width: 40,
+    height: 60,
   },
-  padlockclosedIcon: {
-    height: "5.63%",
-    width: "8.8%",
-    top: "74.63%",
-    right: "7.04%",
-    bottom: "19.75%",
-    left: "84.17%",
+  cardClosed: {
+    borderColor: "#E56F6F",
+    borderWidth: 3,
+    shadowColor: "#E56F6F",
+    shadowOpacity: 0.8,
+    elevation: 6,
+    shadowRadius: 6,
+    shadowOffset: {
+      width: 5,
+      height: 5,
+    },
   },
-  mainscreen: {
-    backgroundColor: Color.white,
-    flex: 1,
-    width: "100%",
-    height: 800,
-    overflow: "hidden",
+  trashClosed: {
+    tintColor: "#E56F6F",
+  },
+  cardIdClosed: {
+    color: "#E56F6F",
   },
 });
 

@@ -1,0 +1,31 @@
+[
+    {
+      "id": 1,
+      "openned": true,
+      "created_at": "2023-09-01T08:00:00Z",
+      "updated_at": "2023-09-01T10:30:00Z",
+      "user_id": 123
+    },
+    {
+      "id": 2,
+      "openned": false,
+      "created_at": "2023-09-02T11:15:00Z",
+      "updated_at": "2023-09-02T14:45:00Z",
+      "user_id": 456
+    },
+    {
+      "id": 3,
+      "openned": true,
+      "created_at": "2023-09-03T09:30:00Z",
+      "updated_at": "2023-09-03T12:20:00Z",
+      "user_id": 789
+    },
+    {
+        "id": 4,
+        "openned": false,
+        "created_at": "2023-09-03T09:30:00Z",
+        "updated_at": "2023-09-03T12:20:00Z",
+        "user_id": 1
+    }
+]
+  

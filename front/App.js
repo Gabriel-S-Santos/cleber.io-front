@@ -21,6 +21,7 @@ const App = () => {
   });
 
   const [showLoginScreen, setShowLoginScreen] = React.useState(false);
+  const [loggedIn, setLoggedIn] = React.useState(false);
 
   React.useEffect(() => {
     if (fontsLoaded) {
@@ -30,6 +31,10 @@ const App = () => {
     }
   }, [fontsLoaded]);
 
+  const handleLoginSuccess = () => {
+    setLoggedIn(true);
+  };
+
   if (!fontsLoaded && !error) {
     return null;
   }
@@ -37,12 +42,25 @@ const App = () => {
   return (
     <NavigationContainer>
       <Stack.Navigator screenOptions={{ headerShown: false }}>
-        <Stack.Screen name="Main" component={MainScreen} />
+        {showLoginScreen ? (
+          loggedIn ? (
+            <Stack.Screen name="MainScreen" component={MainScreen} />
+          ) : (
+            <Stack.Screen name="LoginScreen">
+              {(props) => <LoginScreen {...props} onLoginSuccess={handleLoginSuccess} />}
+            </Stack.Screen>
+          )
+        ) : (
+          <Stack.Screen name="SplashScreen" component={SplashScreen} />
+        )}
+        <Stack.Screen
+          name="LoadingScreen"
+          component={LoadingScreen}
+          options={{ animation: 'none' }}
+        />
       </Stack.Navigator>
     </NavigationContainer>
   );
 };
-
-
 
 export default App;

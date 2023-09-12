@@ -1,16 +1,16 @@
 import * as React from "react";
-import { Text, StyleSheet, View, Pressable, TextInput } from "react-native";
+import { Text, StyleSheet, View, Pressable, TextInput, Alert } from "react-native";
 import { useNavigation } from "@react-navigation/native";
 import { Border, FontSize, Color, FontFamily } from "../GlobalStyles";
 
-const LoginScreen = () => {
+const LoginScreen = ({ onLoginSuccess }) => {
   const navigation = useNavigation();
-  const [user, onChangeUser] = useState('');
-  const [pass, onChangePass] = useState('');
+  const [user, onChangeUser] = React.useState('');
+  const [pass, onChangePass] = React.useState('');
 
   const handleLogin = async () => {
     try {
-      const response = await fetch('.../api/Users/login', {
+      const response = await fetch('http://localhost:3000/api/Users/login', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -23,11 +23,14 @@ const LoginScreen = () => {
 
       if (response.ok) {
         navigation.navigate("MainScreen");
+        onLoginSuccess();
       } else {
-        Alert.alert("Login Failed", "Invalid credentials. Please try again.");
+        const errorData = await response.json();
+        Alert.alert("Login Failed", errorData.message || "Invalid credentials. Please try again.");
       }
     } catch (error) {
       console.error("Error during login:", error);
+      Alert.alert("Login Error", "An error occurred during login. Please try again later.");
     }
   };
 

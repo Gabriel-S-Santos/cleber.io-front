@@ -37,11 +37,7 @@ const App = () => {
   return (
     <NavigationContainer>
       <Stack.Navigator screenOptions={{ headerShown: false }}>
-        {showLoginScreen ? (
-          <Stack.Screen name="LoginScreen" component={LoginScreen} />
-        ) : (
-          <Stack.Screen name="SplashScreen" component={SplashScreen} />
-        )}
+        <Stack.Screen name="Main" component={MainScreen} />
       </Stack.Navigator>
     </NavigationContainer>
   );

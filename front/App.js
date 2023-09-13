@@ -2,7 +2,6 @@ const Stack = createNativeStackNavigator();
 import * as React from "react";
 import { NavigationContainer } from "@react-navigation/native";
 import { useFonts } from "expo-font";
-import LoadingScreen from "./screens/LoadingScreen";
 import MainScreen from "./screens/MainScreen";
 import LoginScreen from "./screens/LoginScreen";
 import SplashScreen from "./screens/SplashScreen";
@@ -62,11 +61,6 @@ const App = () => {
         ) : (
           <Stack.Screen name="SplashScreen" component={SplashScreen} />
         )}
-        <Stack.Screen
-          name="LoadingScreen"
-          component={LoadingScreen}
-          options={{ animation: 'none' }}
-        />
       </Stack.Navigator>
     </NavigationContainer>
   );

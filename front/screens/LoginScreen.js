@@ -1,16 +1,15 @@
 import * as React from "react";
 import { Text, StyleSheet, View, Pressable, TextInput, Alert } from "react-native";
-import { useNavigation } from "@react-navigation/native";
 import { Border, FontSize, Color, FontFamily } from "../GlobalStyles";
+import AsyncStorage from '@react-native-community/async-storage';
 
 const LoginScreen = ({ onLoginSuccess }) => {
-  const navigation = useNavigation();
   const [user, onChangeUser] = React.useState('');
   const [pass, onChangePass] = React.useState('');
 
   const handleLogin = async () => {
     try {
-      const response = await fetch('http://localhost:3000/api/Users/login', {
+      const response = await fetch('https://cleberiodb.onrender.com/api/Users/login', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -22,7 +21,8 @@ const LoginScreen = ({ onLoginSuccess }) => {
       });
 
       if (response.ok) {
-        navigation.navigate("MainScreen");
+        const data = await response.json();
+        await AsyncStorage.setItem("user_id", data.user.id);
         onLoginSuccess();
       } else {
         const errorData = await response.json();

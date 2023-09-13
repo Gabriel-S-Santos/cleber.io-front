@@ -1,18 +1,24 @@
-import React, { useEffect, useState } from "react";
+import * as React from "react";
 import { StyleSheet, View, Text, Pressable, TextInput, Image } from "react-native";
 import { Color, FontFamily, FontSize, Border } from "../GlobalStyles";
-import cardsData from "../cardsList.json";
+import AsyncStorage from '@react-native-community/async-storage';
 
-const MainScreen = () => {
-  const [cards, setCards] = useState(cardsData);
-  const [searchText, setSearchText] = useState("");
+const MainScreen = ({ onLogout }) => {
+  const [userId, setUserId] = React.useState("");
+  const [cards, setCards] = React.useState([]);
+  const [allCards, setAllCards] = React.useState([]);
+  const [searchText, setSearchText] = React.useState("");
+  const [showLogoutButton, setShowLogoutButton] = React.useState(false);
 
   const fetchCards = async () => {
     try {
-      const response = await fetch(".../api/Thrashs");
+      const response = await fetch("https://cleberiodb.onrender.com/api/Thrashs");
       if (response.ok) {
         const data = await response.json();
-        setCards(data);
+        const user_id = await AsyncStorage.getItem("user_id");
+        setAllCards(data.thrashs);
+        setCards(data.thrashs);
+        setUserId(user_id);
       } else {
         console.error("Failed to fetch cards");
       }
@@ -22,45 +28,59 @@ const MainScreen = () => {
   };
 
   const handleLockClick = async (thrashId) => {
-    try {
-      const response = await fetch(`.../api/User/${userId}/${thrashId}`, {
-        method: "PUT",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        // You can add the payload or data you want to update here
-      });
+    const cardToUpdate = cards.find((card) => card.id === thrashId);
 
-      if (response.ok) {
-        // Handle successful update (e.g., update UI)
-      } else {
-        console.error("Failed to update card");
+    if (cardToUpdate && !cardToUpdate.openned) {
+      try {
+        const response = await fetch(`https://cleberiodb.onrender.com/api/Users/action/${userId}/${thrashId}`, {
+          method: "PUT",
+          headers: {
+            "Content-Type": "application/json",
+          },
+        });
+
+        if (response.ok) {
+          fetchCards();
+          console.log("Updated card");
+        } else {
+          console.error("Failed to update card");
+        }
+      } catch (error) {
+        console.error("Error updating card:", error);
       }
-    } catch (error) {
-      console.error("Error updating card:", error);
     }
   };
 
   const filterCards = () => {
     if (searchText === "") {
-      // Se o campo de pesquisa estiver vazio, exiba todos os cards
-      setCards(cardsData);
+      setCards(allCards);
     } else {
-      // Caso contrário, filtre os cards com base no texto de pesquisa
-      const filteredCards = cardsData.filter((card) =>
+      const filteredCards = cards.filter((card) =>
         card.id.toString().includes(searchText)
       );
       setCards(filteredCards);
     }
   };
 
-  // Função para lidar com as alterações no campo de pesquisa
   const handleSearchTextChange = (text) => {
     setSearchText(text);
   };
 
-  useEffect(() => {
-    // fetchCards();
+  const handleLogoutClick = () => {
+    setShowLogoutButton(!showLogoutButton);
+  };
+
+  const handleLogout = async () => {
+    console.log('logout')
+    await AsyncStorage.setItem("user_id", "");
+    onLogout();
+  };
+
+  React.useEffect(() => {
+    fetchCards();
+  }, [])
+  
+  React.useEffect(() => {
     filterCards();
   }, [searchText]);
 
@@ -68,10 +88,16 @@ const MainScreen = () => {
     <View style={styles.container}>
       <View style={styles.header}>
         <Text style={styles.title}>Cleber.io</Text>
-        <Pressable style={styles.logoutButton} onPress={() => navigation.navigate("")}>
+        <Pressable style={styles.logoutButton} onPress={handleLogoutClick}>
           <Text style={styles.logoutButtonText}>Adm</Text>
         </Pressable>
       </View>
+
+      {showLogoutButton ? (
+        <Pressable style={styles.redLogoutButton} onPress={handleLogout}>
+          <Text style={styles.redLogoutButtonText}>Logout</Text>
+        </Pressable>
+      ) : null}
 
       <View style={styles.searchBar}>
         <View style={styles.inputContainer}>
@@ -165,6 +191,7 @@ const styles = StyleSheet.create({
     fontSize: 12,
     fontWeight: "600",
     fontFamily: FontFamily.poppinsSemiBold,
+    position: "relative",
   },
   searchBar: {
     paddingHorizontal: 16,
@@ -267,6 +294,26 @@ const styles = StyleSheet.create({
   },
   cardIdClosed: {
     color: "#E56F6F",
+  },
+  redLogoutButton: {
+    borderRadius: 5,
+    backgroundColor: "#E56F6F",
+    width: 75,
+    height: 30,
+    justifyContent: "center",
+    alignItems: "center",
+    position: "absolute",
+    top: 45,
+    right: 16,
+    zIndex: 9999,
+    marginTop: 10
+  },
+  redLogoutButtonText: {
+    color: Color.white,
+    fontSize: 12,
+    fontWeight: "600",
+    fontFamily: FontFamily.poppinsSemiBold,
+    position: "absolute",
   },
 });
 

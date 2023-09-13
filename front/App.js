@@ -24,15 +24,20 @@ const App = () => {
   const [loggedIn, setLoggedIn] = React.useState(false);
 
   React.useEffect(() => {
-    if (fontsLoaded) {
+    if (fontsLoaded && !showLoginScreen) {
       setTimeout(() => {
         setShowLoginScreen(true);
       }, 3000);
     }
-  }, [fontsLoaded]);
+  }, [fontsLoaded, showLoginScreen]);
 
   const handleLoginSuccess = () => {
     setLoggedIn(true);
+  };
+
+  const handleLogout = () => {
+    setShowLoginScreen(false);
+    setLoggedIn(false);
   };
 
   if (!fontsLoaded && !error) {
@@ -44,7 +49,11 @@ const App = () => {
       <Stack.Navigator screenOptions={{ headerShown: false }}>
         {showLoginScreen ? (
           loggedIn ? (
-            <Stack.Screen name="MainScreen" component={MainScreen} />
+            <Stack.Screen name="MainScreen">
+              {(props) => (
+                <MainScreen {...props} onLogout={handleLogout} />
+              )}
+            </Stack.Screen>
           ) : (
             <Stack.Screen name="LoginScreen">
               {(props) => <LoginScreen {...props} onLoginSuccess={handleLoginSuccess} />}

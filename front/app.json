@@ -1,7 +1,7 @@
 {
   "expo": {
-    "name": "cleber.io",
-    "slug": "cleber.io",
+    "name": "cleberio",
+    "slug": "cleberio",
     "version": "1.0.0",
     "orientation": "portrait",
     "icon": "./assets/icon.png",
@@ -24,10 +24,16 @@
       "adaptiveIcon": {
         "foregroundImage": "./assets/adaptive-icon.png",
         "backgroundColor": "#FFFFFF"
-      }
+      },
+      "package": "com.joaopfusco.cleberio"
     },
     "web": {
       "favicon": "./assets/favicon.png"
+    },
+    "extra": {
+      "eas": {
+        "projectId": "d5660ea9-b629-4bc9-b6d6-c42c319a7f41"
+      }
     }
   }
 }

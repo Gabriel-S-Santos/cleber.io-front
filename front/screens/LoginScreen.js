@@ -6,8 +6,10 @@ import AsyncStorage from '@react-native-community/async-storage';
 const LoginScreen = ({ onLoginSuccess }) => {
   const [user, onChangeUser] = React.useState('');
   const [pass, onChangePass] = React.useState('');
+  const [inputBorderColor, setInputBorderColor] = React.useState('#66e097');
+  const [errorMessage, setErrorMessage] = React.useState('');
 
-  const handleLogin = async () => {
+  const handleLogin = async () => { 
     try {
       const response = await fetch('https://cleberiodb.onrender.com/api/Users/login', {
         method: 'POST',
@@ -23,14 +25,26 @@ const LoginScreen = ({ onLoginSuccess }) => {
       if (response.ok) {
         const data = await response.json();
         await AsyncStorage.setItem("user_id", data.user.id);
+        await AsyncStorage.setItem("user", data.user.username);
         onLoginSuccess();
       } else {
-        const errorData = await response.json();
-        Alert.alert("Login Failed", errorData.message || "Invalid credentials. Please try again.");
+        setErrorMessage("Usuário ou senha incorretos.");
+        setInputBorderColor('red');
+
+        setTimeout(() => {
+          setErrorMessage('');
+          setInputBorderColor('#66e097');
+        }, 2000);
       }
     } catch (error) {
       console.error("Error during login:", error);
-      Alert.alert("Login Error", "An error occurred during login. Please try again later.");
+      setErrorMessage("Usuário ou senha incorretos.");
+      setInputBorderColor('red');
+
+      setTimeout(() => {
+        setErrorMessage('');
+        setInputBorderColor('#66e097');
+      }, 2000);
     }
   };
 
@@ -38,18 +52,22 @@ const LoginScreen = ({ onLoginSuccess }) => {
     <View style={styles.loginscreen}>
       <View style={styles.login}>
 
+      {errorMessage !== '' && (
+        <Text style={styles.errorMessage}>{errorMessage}</Text> // Mostra a mensagem de erro se houver
+      )}
+
         {/* TITULO */}
         <Text style={styles.title}>Cleber.io</Text>
         
         <TextInput
-          style={styles.divLayout}
+          style={[styles.divLayout, { borderColor: inputBorderColor }]}
           onChangeText={onChangeUser}
           value={user}
           placeholder="Username"
         />
 
         <TextInput
-          style={styles.divLayout}
+          style={[styles.divLayout, { borderColor: inputBorderColor }]}
           onChangeText={onChangePass}
           value={pass}
           placeholder="Password"
@@ -139,6 +157,11 @@ const styles = StyleSheet.create({
     flexDirection: 'column',
     justifyContent: 'center',
     alignItems: 'center',
+  },
+  errorMessage: {
+    color: 'red',
+    marginBottom: 50,
+    textAlign: 'center',
   },
 });
 

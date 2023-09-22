@@ -5,6 +5,7 @@ import AsyncStorage from '@react-native-community/async-storage';
 
 const MainScreen = ({ onLogout }) => {
   const [userId, setUserId] = React.useState("");
+  const [user, setUser] = React.useState("");
   const [cards, setCards] = React.useState([]);
   const [allCards, setAllCards] = React.useState([]);
   const [searchText, setSearchText] = React.useState("");
@@ -16,9 +17,11 @@ const MainScreen = ({ onLogout }) => {
       if (response.ok) {
         const data = await response.json();
         const user_id = await AsyncStorage.getItem("user_id");
+        const user_var = await AsyncStorage.getItem("user");
         setAllCards(data.thrashs);
         setCards(data.thrashs);
         setUserId(user_id);
+        setUser(user_var);
       } else {
         console.error("Failed to fetch cards");
       }
@@ -71,8 +74,9 @@ const MainScreen = ({ onLogout }) => {
   };
 
   const handleLogout = async () => {
-    console.log('logout')
+    console.log('logout');
     await AsyncStorage.setItem("user_id", "");
+    await AsyncStorage.setItem("user", "");
     onLogout();
   };
 
@@ -89,7 +93,7 @@ const MainScreen = ({ onLogout }) => {
       <View style={styles.header}>
         <Text style={styles.title}>Cleber.io</Text>
         <Pressable style={styles.logoutButton} onPress={handleLogoutClick}>
-          <Text style={styles.logoutButtonText}>Adm</Text>
+          <Text style={styles.logoutButtonText}>{user}</Text>
         </Pressable>
       </View>
 
